@@ -11,7 +11,12 @@ data = {
 }
 
 #requests中参数不用编码
-res = requests.get(url,params=data,headers=headers)
+
+#get
+# res = requests.get(url,params=data,headers=headers)
+
+#post
+res = requests.get(url,data=data,headers=headers)
 
 context = res.text
 print(context)

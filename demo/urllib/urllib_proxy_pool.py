@@ -1,4 +1,5 @@
 import urllib.request
+import random
 
 url = 'https://www.baidu.com'
 headers =  {
@@ -8,9 +9,14 @@ headers =  {
 
 requestObject = urllib.request.Request(url,headers=headers)
 
-proxy = {
+proxy_pool = [
+    {'http':'192.168.1.1:8888'},
+    {'http':'192.168.1.2:8888'}
+]
 
-}
+#随机获取代理池中的代理ip
+proxy = random.choice(proxy_pool)
+
 
 #获取handle对象
 handler = urllib.request.ProxyHandler(proxies=proxy)
