@@ -450,3 +450,28 @@ STATICFILES_DIRS = [
 #生成环境收集目录，非必要
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 ```
+
+
+
+### 向后端发送请求
+
+```html
+<form action="{% url 'path()函数的name值' %}" method="post">
+<!--    必要-->
+    {% csrf_token %}
+    
+    #后端通过name值获取数据
+    <input type="text" name="example_name">
+</form>
+```
+
+views.py 中的该路径函数
+
+```python
+def example_def(request):
+    #需要大写
+    if request.method == 'POST':
+        example_name = request.POST.get("example_name")
+    
+    return render(request, 'html文件路径')
+```
