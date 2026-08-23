@@ -82,7 +82,7 @@ DjangoProject/                          # 项目根目录
 
 ### 项目启动
 
-在home目录下创建`template`存放html，css，javascript文件资源
+在home目录下创建`templates`存放html，css，javascript文件资源
 
 创建相应文件夹
 
@@ -433,3 +433,20 @@ Student.objects.filter(age=18)
 Student.objects.exclude(age=18)
 ```
 
+
+
+### 加载静态文件
+
+setting.py
+
+```python
+STATIC_URL = 'static/'
+
+#必要配置
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+#生成环境收集目录，非必要
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+```
