@@ -1,0 +1,87 @@
+{% extends 'html/base.html' %}
+
+{% block style %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'register.css' %}">
+{% endblock %}
+
+{% block title %}
+    Register Page
+{% endblock %}
+
+{% block start %}
+<div class="container container-min p-5 mx-auto border shadow" style="max-width: 40%;">
+    <h1 class="text-center pb-3">Register</h1>
+    <hr>
+    {% if messages %}
+        {% for m in messages %}
+            {% if m.tags == 'error' %}
+                <p class="text-danger text-shadow">{{ m }}</p>
+            {% else %}
+                <p class="text-success text-shadow">{{ m }}</p>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-5 mb-3">
+                <div class="form-floating">
+                    <input type="text" id="f_username" class="form-control focus-ring change-focus-ring" style="" placeholder="First Name" name="first_name" value="{{ first_name }}">
+                    <label for="f_username" class="form-label">First Name</label>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating">
+                    <input type="text" id="l_username" class="form-control focus-ring change-focus-ring" style="" placeholder="First Name" name="last_name" value="{{ last_name }}">
+                    <label for="l_username" class="form-label">Last Name</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="text" id="user_email" class="form-control focus-ring change-focus-ring" placeholder="Email Address" name="user_email" value="{{ email }}">
+            <label for="user_email" class="form-label">Email Address</label>
+        </div>
+        <div class="form-floating mb-4">
+            <input type="text" id="password" class="form-control focus-ring change-focus-ring" placeholder="Password" name="password" value="{{ password }}">
+            <label for="password" class="form-label">Password</label>
+        </div>
+        <div class="form-floating mb-4">
+            <input type="text" id="password2" class="form-control focus-ring change-focus-ring" placeholder="Password" name="password_again" value="{{ password_again }}">
+            <label for="password2" class="form-label">Password Again</label>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <div class="form-check mb-3" style="font-size: 12px">
+                    <input type="checkbox" id="agree" class="form-check-input focus-ring change-focus-ring" value="yes" name="check_input">
+                    <label for="agree"></label>
+                    <a href="#" class="shadow" data-bs-toggle="modal" data-bs-target="#modal">同意用户协议</a>
+                    <div class="modal fade" id="modal">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <div class="modal-title fs-4">用户协议</div>
+                                    <button class="btn-close" data-bs-dismiss></button>
+                                </div>
+                               <div class="modal-body" style="min-height: 300px; max-height: 300px;position: relative">
+                                   <div style="min-height: 220px; max-height: 220px;overflow: auto">
+                                       协议内容
+                                   </div>
+                               </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col" style="font-size: 13px">
+                <a href="{% url 'login' %}" >Always has account</a>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-success shadow">sign up</button>
+        </div>
+
+    </form>
+</div>
+{% endblock %}

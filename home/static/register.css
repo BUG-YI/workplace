@@ -1,0 +1,16 @@
+.change-focus-ring{
+    --bs-focus-ring-width: 0.1rem;
+    --bs-focus-ring-color: #a8f1bf;
+}
+
+.container.container-min{
+    min-width: 450px;
+}
+
+h1{
+    text-shadow: 0.11rem 0.11rem #252525;
+}
+
+.text-shadow{
+    text-shadow: 2px 2px 2px rgba(1,1,1,0.5);
+}

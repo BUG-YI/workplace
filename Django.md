@@ -475,3 +475,485 @@ def example_def(request):
     
     return render(request, 'html文件路径')
 ```
+
+
+
+### message内置消息模块
+
+setting.py
+
+```python
+INSTALLED_APPS = [
+    ...
+    'django.contrib.messages',  # 确保已添加
+]
+
+MIDDLEWARE = [
+    ...
+    'django.contrib.sessions.middleware.SessionMiddleware',  # 消息依赖 Session
+    'django.contrib.messages.middleware.MessageMiddleware',  # 消息中间件
+]
+
+TEMPLATES = [
+    {
+        ...
+        'OPTIONS': {
+            'context_processors': [
+                ...
+                'django.contrib.messages.context_processors.messages',  # 模板中使用 messages 变量
+            ],
+        },
+    },
+]
+```
+
+
+
+### Auth用户控制
+
+#### 一对一
+
+含义：A 表中的一条记录，对应 B 表中的一条记录。
+
+适用场景：扩展用户信息、身份证与公民、商品与商品详情。
+
+models.py
+
+```python
+from django.db import models
+from django.contrib.auth.models import User
+
+class Account(models.Model):
+    #一对一
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='account', null=True, blank=True)
+
+    first_name = models.CharField()
+    last_name = models.CharField()
+```
+
+完成后， python manage.py makemigrations ， python manage.py migrate 
+
+views.py
+
+```python
+from django.shortcuts import render, redirect
+
+from django.contrib import messages
+from django.contrib.auth.models import User
+
+from .models import Account
+
+def register_page(request):
+    if request.method == 'POST':
+        data = request.POST
+        first_name = data.get('first_name')
+        email = data.get('user_email')
+        password = data.get('password')
+        password_again = data.get('password_again')
+        check_input = data.get('check_input')
+        content = {
+            'first_name': first_name,
+            'email': email,
+            'password': password,
+            'password_again': password_again,
+        }
+        if not email or not password or not password_again or not first_name or not last_name:
+            messages.error(request, 'Please fill in all the information')
+            return render(request,'html/register.html',content)
+
+        #用于验证用户是否存在
+        if User.objects.filter(username=email).exists():
+            messages.error(request,'Email always existence!')
+            return render(request, 'html/register.html', content)
+        
+        if password != password_again:
+            messages.error(request, "Twice password isn's same")
+            return render(request, 'html/register.html', content)
+
+        if not check_input:
+            messages.error(request, 'Please check the user agreement ')
+            return render(request,'html/register.html',content)
+
+        user = User.objects.create_user(
+            username = email,
+            password=password
+        )
+
+        account = Account(
+            user=user,
+            first_name=first_name,
+        )
+
+        account.save()
+        print('created successfully!')
+        messages.success(request, 'Register successfully')
+        return redirect('login')
+
+    return render(request, 'html/register.html')
+```
+
+register.html
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'register.css' %}">
+    <title>{% block title %}Document{% endblock %}</title>
+</head>
+<body class="p-3 m-0 border-0 bd-example m-0 border-0">
+<div class="container container-min p-5 mx-auto border shadow" style="max-width: 40%;">
+    <h1 class="text-center pb-3">Register</h1>
+    <hr>
+    {% if messages %}
+        {% for m in messages %}
+            {% if m.tags == 'error' %}
+                <p class="text-danger text-shadow">{{ m }}</p>
+            {% else %}
+                <p class="text-success text-shadow">{{ m }}</p>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-5 mb-3">
+                <div class="form-floating">
+                    <input type="text" id="f_username" class="form-control focus-ring change-focus-ring" style="" placeholder="First Name" name="first_name" value="{{ first_name }}">
+                    <label for="f_username" class="form-label">First Name</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="text" id="user_email" class="form-control focus-ring change-focus-ring" placeholder="Email Address" name="user_email" value="{{ email }}">
+            <label for="user_email" class="form-label">Email Address</label>
+        </div>
+        <div class="form-floating mb-4">
+            <input type="text" id="password" class="form-control focus-ring change-focus-ring" placeholder="Password" name="password" value="{{ password }}">
+            <label for="password" class="form-label">Password</label>
+        </div>
+        <div class="form-floating mb-4">
+            <input type="text" id="password2" class="form-control focus-ring change-focus-ring" placeholder="Password" name="password_again" value="{{ password_again }}">
+            <label for="password2" class="form-label">Password Again</label>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <div class="form-check mb-3" style="font-size: 12px">
+                    <input type="checkbox" id="agree" class="form-check-input focus-ring change-focus-ring" value="yes" name="check_input">
+                    <label for="agree"></label>
+                    <a href="#" class="shadow" data-bs-toggle="modal" data-bs-target="#modal">同意用户协议</a>
+                    <div class="modal fade" id="modal">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <div class="modal-title fs-4">用户协议</div>
+                                    <button class="btn-close" data-bs-dismiss></button>
+                                </div>
+                               <div class="modal-body" style="min-height: 300px; max-height: 300px;position: relative">
+                                   <div style="min-height: 220px; max-height: 220px;overflow: auto">
+                                       协议内容
+                                   </div>
+                               </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col" style="font-size: 13px">
+                <a href="{% url 'login' %}" >Always has account</a>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-success shadow">sign up</button>
+        </div>
+
+    </form>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>
+```
+
+
+
+#### 一对多
+
+含义：A 表中的一条记录，对应 B 表中的多条记录。
+
+适用场景：一个作者有多篇文章、一个分类下有多个商品、一个部门有多个员工。
+
+
+#### 多对多
+
+含义：A 表中的一条记录，对应 B 表中的多条记录；反之亦然。
+
+适用场景：学生与课程、文章与标签、用户与角色。
+
+#### 用户认证
+
+authenticate 验证数据库中是否有输入的账号
+login 登入账号
+
+views.py
+
+```python
+from django.shortcuts import render, redirect
+
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+
+def login_page(request):
+    if request.method == 'POST':
+        data = request.POST
+        email = data.get('user_email')
+        password = data.get('password')
+        input_check = data.get('check_input')
+
+        content =  {
+            'email': email,
+            'password': password
+        }
+
+        if not email or not password:
+            messages.error(request,'Please fill in all the information')
+            return render(request, 'html/login.html', content)
+
+        if not input_check:
+            messages.error(request, 'Please check the user agreement')
+            return render(request, 'html/login.html', content)
+
+        if not User.objects.filter(username=email).exists():
+            messages.error(request, "Email or password is invalid")
+            return redirect('login')
+        user = authenticate(username=email, password=password)
+        if user is None:
+            return redirect('login')
+        else:
+            login(request, user=user)
+            return redirect( 'index',)
+
+
+    return render(request, 'html/login.html')
+```
+
+login.html
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'register.css' %}">
+    <title>{% block title %}Document{% endblock %}</title>
+</head>
+<body class="p-3 m-0 border-0 bd-example m-0 border-0">
+<div class="container container-min p-5 mx-auto border shadow" style="max-width: 40%;">
+    <h1 class="text-center pb-3">Login</h1>
+    <hr>
+    {% if messages %}
+        {% for m in messages %}
+            {% if m.tags == 'error' %}
+                <p class="text-danger">{{ m }}</p>
+            {% else %}
+                <p class="text-success">{{ m }}</p>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <div class="form-floating mb-3">
+            <input type="text" id="user_email" class="form-control focus-ring change-focus-ring" placeholder="Email Address" name="user_email" value="{{ email }}">
+            <label for="user_email" class="form-label">Email Address</label>
+        </div>
+        <div class="form-floating mb-4">
+            <input type="text" id="password" class="form-control focus-ring change-focus-ring" placeholder="Password" name="password" value="{{ password }}">
+            <label for="password" class="form-label">Password</label>
+        </div>
+        <div class="row">
+            <div class="col-9">
+                <div class="form-check mb-3" style="font-size: 12px">
+                    <input type="checkbox" id="agree" class="form-check-input focus-ring change-focus-ring" value="yes" name="check_input">
+                    <label for="agree"></label>
+                    <a href="#" class="shadow" data-bs-toggle="modal" data-bs-target="#modal">同意用户协议</a>
+                    <div class="modal fade" id="modal">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <div class="modal-title fs-4">用户协议</div>
+                                    <button class="btn-close" data-bs-dismiss></button>
+                                </div>
+                               <div class="modal-body" style="min-height: 300px; max-height: 300px;position: relative">
+                                   <div style="min-height: 220px; max-height: 220px;overflow: auto">
+                                       协议内容
+                                       <p>1</p>
+                                   </div>
+
+                                   <div style="position: absolute; bottom: 10px; right: 10px">
+                                       <button class="btn btn-danger">Refuse</button>
+                                       <button class="btn btn-primary">Agree</button>
+                                   </div>
+                               </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col" style="font-size: 13px">
+                <a href="{% url 'register' %}" >Go to sign up</a>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-success shadow">login in</button>
+        </div>
+
+    </form>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>
+```
+
+
+#### logout登出用户
+
+views.py
+
+```python
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+
+def login_out(request):
+    logout(request)
+    return redirect('login')
+```
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    {%  block style %}
+    {% endblock %}
+    <title>{% block title %}Document{% endblock %}</title>
+    <style>
+        .nav-color{
+            background-color: rgb(200, 200, 200);
+        }
+    </style>
+</head>
+<body class="p-0 m-0 border-0 bd-example m-0 border-0">
+<nav class="navbar navbar-expand-lg nav-color shadow-lg">
+    <div class="container-fluid">
+        <a href="#" class="navbar-brand">cqy</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav-title" aria-controls="nav-title" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="nav-title" class="collapse navbar-collapse" >
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">case</a>
+                </li>
+            </ul>
+            <div class="be">
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="btn btn-danger">logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-success">login</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+{% block start %}
+
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>
+```
+
+
+
+#### login_required 检测用户是否登录
+
+如果用户未登录重定向到某页面
+
+
+views.py
+
+```python
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+
+
+@login_required(login_url='login')
+def index(request):
+    return render(request, 'html/index.html')
+```
+
+
+
+### 创建超级管理员
+
+```cmd
+python manage.py createsuperuser
+```
+
+网页路径：`ip address:8000/admin`
+
+
+admin.py
+
+注册数据表
+
+```python
+from django.contrib import admin
+
+from .models import *
+
+admin.site.register(Account)
+```
+
+
+
+### 聚合
+
+Django ORM 中用于对查询集进行聚合计算的方法，比如计算总数、平均值、最大值、最小值等。
+
+#### aggregate() 是 Django 查询集（QuerySet）的一个方法，用于返回一个包含聚合值的字典。它不会返回模型对象，而是返回计算结果。
+
+| 函数  |	作用|示例|
+|-----|    ----| ----|
+Count|	计数	|统计用户数量
+Sum	|求和	|计算订单总金额
+Avg	|平均值	|计算平均年龄
+Max	|最大值	|找出最高价格
+Min	|最小值	|找出最低价格
+StdDev	|标准差	|数据离散程度
+Variance	|方差	|数据波动程度
+
+
+
+
+```python
+from django.db.models import Count, Sum, Avg, Max, Min
+
+user_count = User.objects.all().aggregate(Count('id'))
+```
+
+
+
+#### annotate
