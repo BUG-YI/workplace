@@ -1,0 +1,117 @@
+:root{
+    --navbar: 56px;
+}
+
+.container-body{
+    width: 100%;
+    height: calc(100vh - var(--navbar) - 2rem);
+}
+
+.h3-shadow{
+    text-shadow: 4px 3px 3px rgb(144 144 144);
+}
+
+#search-flower{
+    width: 72%;
+    padding: 0 0.5vw 0 1vw;
+}
+
+.modal-img{
+    width: clamp(135px, 33%, 400px);
+    height: clamp(90px, 200px, 400px);
+    position: relative;
+}
+.modal-img img{
+    width: 100%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.upload-flower-pic-btn{
+    width: 100%;
+    /*height: 100%;*/
+    /*width: clamp(135px, 33%, 400px);*/
+    height: clamp(90px, 200px, 400px);
+    line-height: clamp(90px, 200px, 400px);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.upload-flower-pic-btn:hover{
+    background-color: #cfcfcf7a;
+}
+
+.dd{
+    height: 200px;
+    overflow: auto;
+    scrollbar-width: none;
+}
+
+
+.modal-upload-content{
+    width: 67%;
+}
+
+.container-card{
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    position: relative;
+}
+
+.card{
+    padding: 0.7rem;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    position: relative;
+}
+.card-img{
+    width: clamp(100px, 9vw, 300px);
+    /*height: 13vw;*/
+    min-height: 120px;
+    background: #000;
+    overflow: hidden;
+    position: relative;
+}
+.card-img-img{
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#upload-flower-introduction{
+    resize: block;
+}
+
+.card-font{
+    font-size: clamp(10px, 1vw, 30px)
+}
+.card-font-5{
+    font-size: clamp(12px, 1.1vw, 30px);
+}
+textarea {
+    width: 100%;
+    /*height: 3.5vw;*/
+    /*outline: none;*/
+    resize: none;
+}
+
+.setting-img{
+    transition: transform 1s ease;
+    cursor: pointer;
+}
+.setting-img:hover{
+    color: #4f9157;
+    transform: rotate(200deg) !important;
+}

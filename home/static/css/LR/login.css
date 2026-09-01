@@ -1,0 +1,18 @@
+.container-size{
+    max-width: 40%;
+    min-width: 400px;
+}
+
+h1{
+    font-size: 3.5rem;
+    text-shadow: 3px 3px 5px rgba(1,1,1,0.5);
+}
+
+.form-container{
+    max-width: 70%;
+}
+
+.checkbox-user-agreement{
+    font-size: 12px;
+    /*display: ;*/
+}

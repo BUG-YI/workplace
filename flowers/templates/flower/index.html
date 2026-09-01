@@ -1,0 +1,38 @@
+{% extends 'flower/basic.html' %}
+
+{% block title %}www.baihuahui.com{% endblock %}
+
+{% block body %}
+<div class="container-fluid p-3">
+    <div class="row">
+    {% if not range_12 %}
+        {% for i in range_12 %}
+        <div class="col-4" style="min-width: 460px">
+            <div class="card m-3 d-flex flex-row">
+                <div class="placeholder-glow m-2" style="width: 35%; height: 200px;">
+                    <div class="placeholder col-12" style="height: 200px;">1233</div>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title placeholder-glow">
+                        <span class="placeholder col-3 bg-primary"></span>
+                    </h5>
+                    <p class="card-text placeholder-glow">
+                        <span class="placeholder col-4 bg-info"></span>
+                    </p>
+                    <p class="card-text placeholder-glow">
+                        <span class="placeholder col-6"></span>
+                        <span class="placeholder col-3 bg-danger"></span>
+                        <span class="placeholder col-3"></span>
+                        <span class="placeholder col-7"></span>
+                        <span class="placeholder col-5 bg-warning"></span>
+                        <span class="placeholder col-3"></span>
+                        <span class="placeholder col-6"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+    </div>
+</div>
+{% endblock %}

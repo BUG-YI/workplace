@@ -1,0 +1,131 @@
+{% extends 'html/User/user.html' %}
+
+{% block style %}
+{{ block.super }}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/User/Port/uploadFlowers.css' %}">
+{% endblock %}
+
+{% block user_main %}
+<div class="container-body">
+    <div class="row">
+        <div class="col fs-3 h3-shadow">Flowers</div>
+        <div class="col">
+            <form action="" class="d-flex" style="gap: 10px">
+                <input id="search-flower" class="border border-2 border-secondary rounded-pill" type="search">
+                <button class="btn  btn-outline-success shadow">search</button>
+            </form>
+        </div>
+        <div class="col">
+            <button class="btn btn-success rounded-pill float-end shadow" data-bs-toggle="modal" data-bs-target="#flower-upload"><i class="bi bi-cloud-arrow-up"></i> upload</button>
+            <div id="flower-upload" class="modal fade">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-text">Upload flowers</h5>
+                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <span id="upload-flower-tip" class="mt-3 text-center text-primary" hidden="hidden">Flower picture, name are must in filled!</span>
+                        <form id="form-upload-flowers" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="form_upload_data" value="from_upload_flower">
+                            <div class="modal-body row">
+                                <div class="border modal-img col-3 overflow-hidden">
+                                    <img src="" alt="upload-pic" id="pic-preview" width="150px" hidden="hidden">
+                                    <input type="file" id="upload-flower-pic" class="d-none" accept="image/*" name="flower_pic">
+                                    <label for="upload-flower-pic" class="upload-flower-pic-btn btn text-primary">
+                                        <i class="bi bi-upload"></i>&nbsp;Upload
+                                    </label>
+                                </div>
+                                <div class="col-8 dd p-1">
+                                    <input type="text" id="upload-flowers-name" class="form-control w-100 mb-3" placeholder="Flower Name" name="flower_name" >
+                                    <input type="text" id="upload-flowers-language" class="form-control w-100 mb-3" placeholder="Flower Language" name="flower_language">
+                                    <input type="text" id="upload-flowers-place" class="form-control w-100 mb-3" placeholder="Flower Growth Location" name="flower_growth">
+    {#                                <input type="text" id="upload-flowers-introduction" class="form-control w-100 mb-3" placeholder="Flower Introduction">#}
+                                    <textarea id="upload-flower-introduction" class="form-control" cols="24" rows="1" placeholder="Flower Introduction" name="flower_introduction" ></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-danger" data-bs-dismiss="modal">cancel</button>
+                                <button type="submit" class="btn btn-success">submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-card">
+    {% if flower_lis %}
+        {% for d in flower_lis %}
+            <div class="card shadow">
+                <div class="card-img">
+                    <img src="/media/{{ d.flower_image }}" class="card-img-img" alt="flower">
+                </div>
+
+                <div style="flex: 1">
+                    <div class="card-font-5 row">
+                        <div class="col-9">
+                            <div class="text-align"><strong><i>{{ d.flower_name }}</i></strong></div>
+                        </div>
+                        <div class="col-3 text-center dropdown">
+                            <i class="bi bi-gear setting-img" data-bs-toggle="dropdown" title="more"></i>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#flower-change"><i class="bi bi-brush"></i>&nbsp;change</a>
+
+                                </li>
+                                <li><a href="" class="dropdown-item"><i class="bi bi-trash"></i>&nbsp;delete</a></li>
+                            </ul>
+                        </div>
+                    </div>
+{#                    <input type="text" value={{ d.id }}>#}
+                    <div id="flower-change" class="modal fade">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <div class="modal-title">Change flower info</div>
+                                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <form id="form-change-flowers" enctype="multipart/form-data">
+                                {% csrf_token %}
+
+                                <input type="hidden" name="form_upload_data" value="from_change_flower">
+                                <div class="modal-body row">
+                                    <div class="border modal-img col-3 overflow-hidden">
+                                        <img src="" alt="upload-pic" id="pic-preview-change" width="150px" hidden="hidden">
+                                        <input type="file" id="change-flower-pic" class="d-none" accept="image/*" name="flower_pic">
+                                        <label for="change-flower-pic" class="upload-flower-pic-btn btn text-primary">
+                                            <i class="bi bi-upload"></i>&nbsp;Upload
+                                        </label>
+                                    </div>
+                                    <div class="col-8 dd p-1">
+                                        <input type="text" id="change-flowers-name" class="form-control w-100 mb-3" placeholder="Flower Name" name="flower_name" value="{{ d.flower_name }}">
+                                        <input type="text" id="change-flowers-language" class="form-control w-100 mb-3" placeholder="Flower Language" name="flower_language">
+                                        <input type="text" id="change-flowers-place" class="form-control w-100 mb-3" placeholder="Flower Growth Location" name="flower_growth">
+                                        <textarea id="change-flower-introduction" class="form-control" cols="24" rows="1" placeholder="Flower Introduction" name="flower_introduction" ></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-danger" data-bs-dismiss="modal">cancel</button>
+                                    <button type="submit" class="btn btn-success">submit</button>
+                                </div>
+                            </form>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="card-font">花语：{{ d.flower_language }}</p>
+                    <p class="card-font">生长位置： {{ d.flower_growth_location }}</p>
+{#                    <p class="card-font">介绍</p>#}
+                    <textarea name="" id="" class="card-font form-control" cols="24" rows="2" disabled readonly>{{ d.flower_information }}</textarea>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        1234
+    {% endif %}
+    </div>
+</div>
+<script type="module" src="{% static 'js/User/Port/uploadFlowers.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'basic.html' %}
+
+{% block style %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/LR/login.css' %}">
+{% endblock %}
+
+{% block title %}Login{% endblock %}
+
+{% block body %}
+<div class="container container-size p-3 m-5 mx-auto border rounded-3">
+    <h1 class="text-center">Register</h1>
+    <hr>
+    {% if messages %}
+        {% for m in messages %}
+            {% if m.tags == 'error' %}
+                <p class="text-danger text-center">{{ m }}</p>
+            {% else %}
+                <p class="text-success text-center">{{ m }}</p>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    <form action="{% url 'register' %}" class="form-container mx-auto" method="post">
+        {% csrf_token %}
+        <div class="row mb-3">
+            <div class="col">
+                <div class="form-floating">
+                    <input id="f_name" type="text" class="form-control" placeholder="First Name" name="f_name" value="{{ f_name }}">
+                    <label for="f_name">First Name</label>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating">
+                    <input id="l_name" type="text" class="form-control" placeholder="Last Name" name="l_name" value="{{ l_name }}">
+                    <label for="l_name">Last Name</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-floating mb-3">
+            <input id="email" type="text" class="form-control" placeholder="Email Address" name="email" value="{{ email }}">
+            <label for="email" class="form-label">Email Address</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input id="password" type="text" class="form-control" placeholder="Password" name="password" value="{{ password }}">
+            <label for="password" class="form-label">Password</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input id="password_again" type="text" class="form-control" placeholder="Password Again" name="a_password" value="{{ a_password }}">
+            <label for="password_again" class="form-label">Password Again</label>
+        </div>
+        <div class="checkbox-user-agreement mb-5 d-flex">
+            <input id="agree" class="form-check-input me-1" type="checkbox" value="yes" name="agree">
+            <label for="agree"></label>
+            <a href="#" data-bs-toggle="modal" data-bs-target="#modal" class="me-auto" >同意用户协议</a>
+            <div id="modal" class="modal fade">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content" style="max-height: 400px">
+                        <div class="modal-header">
+                            <div class="modal-title fs-4">用户协议</div>
+                            <button class="btn-close" data-bs-dismiss></button>
+                        </div>
+                        <div class="modal-body" style="max-height: 300px; overflow: auto">
+                            内容
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a href="{% url 'login' %}">Always has an account ?</a>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-success">sign up</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

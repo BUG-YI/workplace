@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    {% block style %}
+    {% endblock %}
+    <title>{% block title %}Document{% endblock %}</title>
+    <style>
+        .input{
+            width: 300px;
+        }
+        .a{
+            margin: 5px;
+            max-width: 80%;
+            background-color: rgba(237, 237, 237, 0.93);
+        }
+        .a:hover{
+            background-color: rgba(220, 220, 220, 0.93);
+        }
+    </style>
+</head>
+<body class="p-0 m-0 border-0">
+{% block navbar %}
+<nav class="navbar navbar-expand-lg bg-secondary sticky-top">
+    <div class="container-fluid">
+        <a href="#" class="navbar-brand">百花汇</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item active">
+                    <a href="#" class="nav-link">玫瑰</a>
+                </li>
+                <li class="nav-item"><a href="#" class="nav-link">百合</a></li>
+            </ul>
+
+            <form action="#" class="d-flex me-auto">
+                {% csrf_token %}
+                <input type="search" class="form-control me-2 input" placeholder="search">
+                <button class="btn btn-primary">search</button>
+            </form>
+
+            {% if request.user.is_authenticated %}
+{#                <a href="{% url 'logout' %}" class="btn btn-danger">logout</a>#}
+                <div class="dropdown">
+                    <button class="btn border-0 dropdown-toggle" data-bs-toggle="dropdown">{{ request.user }}</button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a href="{% url 'user' %}" class="btn text-center d-block mx-auto a ">前往主页</a></li>
+                        <li><a href="{% url 'logout' %}" class="btn text-center d-block mx-auto a text-danger ">logout</a></li>
+                    </ul>
+                </div>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-success">login in</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+{% endblock %}
+{% block body %}
+
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

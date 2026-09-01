@@ -1,0 +1,232 @@
+{% extends 'basic.html' %}
+{% load static %}
+
+{% block style %}
+{% load static %}
+    <link rel="stylesheet" href="{% static 'css/User/user.css' %}">
+{% endblock %}
+
+{% block title %}user_manage{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg bg-body-tertiary shadow">
+    <div class="container-fluid">
+        <a href="#" class="navbar-brand me-auto">User Management</a>
+        <a href="{% url 'logout' %}" class="btn btn-danger">logout&nbsp;<i class="bi bi-box-arrow-right"></i></a>
+    </div>
+</nav>
+{% endblock %}
+
+{% block body %}
+<div class=" d-flex">
+<aside>
+<ul class="nav  fs-6 ">
+    <li class="nav-item mx-auto m-2 rounded-3 active nav-li">
+        <a href="{% url 'user' %}" class="nav-link text-white">
+            <i class="bi bi-person"></i>&nbsp;User</a>
+    </li>
+    <li class="nav-item mx-auto m-2 rounded-3 nav-li">
+        <a href="#" class="nav-link text-white">
+            <i class="bi bi-people"></i>&nbsp;Friends</a>
+    </li>
+    <li class="nav-item mx-auto m-2 rounded-3 nav-li">
+        <a href="{% url 'upload_flowers' %}" class="nav-link text-white">
+        <i class="bi bi-cloud-plus"></i>&nbsp;Update flowers</a>
+    </li>
+</ul>
+</aside>
+<div class="container p-3" style="min-width: 770px">
+{% block user_main %}
+    <div class="user-first">
+        <h4 class="text-info user-select-none me-auto">User Information</h4>
+        <i class="bi bi-chat-dots me-5 fs-4"></i>
+        <button class="btn btn-success me-2 rounded-pill">change info</button>
+    </div>
+    <div class="user-second">
+        <div class="user-second-left p-3 border rounded-3 shadow overflow-auto">
+{#            <i class="bi bi-pencil-square fs-5 text-primary" style=";position: absolute; right: 2vw; top: 2vw"></i>#}
+            <div class="border user-second-left-img mx-auto mb-4">
+                <button class="user-second-left-b fs-5" data-bs-toggle="modal" data-bs-target="#modal-image"><i class="bi bi-box-arrow-in-up text-primary"></i> Update</button>
+                <div id="modal-image" class="modal fade">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-text">Update User Picture</h5>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form id="user-picture">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <input type="hidden" value="uploadPicture" name="picture_input">
+                                <p id="picture-p" class="text-center text-success" hidden="hidden"></p>
+                                <input id="input-picture" type="file" name="user_picture" accept="image/*">
+                                <div id="preview" style="display: none">
+                                    <h6>图片预览</h6>
+                                    <img id="preview-picture" width="150rem" src="" alt="图片预览">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-danger" data-bs-dismiss="modal">cancel</button>
+                                <button class="btn btn-success" id="picture-btn">submit</button>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <img src="{{ user.account.user_picture.url }}" class="w-100" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: -1" alt="user_picture">
+            </div>
+            <h4 class="text-center m-3 text-primary">{{ contents.username }}</h4>
+            <h6 class="text-center m-1 text-secondary">{{ contents.email }}</h6>
+            <p class="text-center text-secondary mb-5">last login time</p>
+            <div class="container">
+                <a href="" class="user-second-left-a {% block user_main_info %}shadow text-info{% endblock %} rounded-3"><i class="bi bi-person-vcard"></i> User Information</a>
+
+                <a href="" class="user-second-left-a {% block user_mian_plan %}text-secondary{% endblock %} rounded-3"><i class="bi bi-send"></i> plan</a>
+                <a href="" class="user-second-left-a {% block user_mian_health %}text-secondary{% endblock %} rounded-3"><i class="bi bi-lungs"></i> Health</a>
+            </div>
+        </div>
+        <div class="user-second-right overflow-auto">{# p-3 border rounded-3 shadow #}
+{#            <i class="bi bi-pencil-square fs-5 text-primary" style="width: 0;position: absolute; right: 5vw; top: 1vw"></i>#}
+        {% block user_main_right %}
+        <div class="border rounded-3 shadow p-3 mb-3">
+            <h4>Username</h4>
+            <p class="">{{ contents.username }}</p>
+            <br>
+            <div class="row">
+                <div class="col">
+                    <h5 class="">First Name</h5>
+                    <p>{{ contents.f_name }}</p>
+                </div>
+                <div class="col">
+                    <h5>Last Name</h5>
+                    <p>{{ contents.l_name }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="border rounded-3 shadow p-3 mb-3">
+            <h4>Telephone Number</h4>
+            <p>{{ contents.tel }}</p>
+            <br>
+            <div class="row">
+                <div class="col">
+                    <h4>Email Address</h4>
+                    <p>{{ contents.email }}</p>
+                </div>
+                <div class="col">
+                    <h4>Register Time</h4>
+                    <p>{{ contents.register_time }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="border rounded-3 shadow p-3">
+            <div class="row">
+                <div class="col">
+                    <h4>Gender</h4>
+                    <p>{% if contents.gender == '0' %}Woman{% elif contents.gender == '1' %}Man{% else %}Unknown{% endif %}</p>
+                </div>
+                <div class="col">
+                    <h4>Hobby</h4>
+                    <p>{{ contents.hobby }}</p>
+                </div>
+            </div>
+            <h4>Family Address</h4>
+            <p>{{ contents.f_add }}</p>
+        </div>
+        <button type="button" class="btn btn-primary mt-4 rounded-pill float-end" data-bs-toggle="modal" data-bs-target="#modal">Change Info</button>
+{#            <div class="d-flex align-items-center">#}
+
+        <div id="modal" class="modal fade">
+{#            <div class="spinner-border"></div>#}
+            <div class="modal-dialog  modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-text fs-5">Change User Information</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <span id="message" class="text-danger text-center p-3 pb-0" hidden="hidden">123</span>
+                    <form id="form-change-info">
+                    {% csrf_token %}
+                    <input type="hidden" name="change_information" value="change_info">
+                    <div class="modal-body">
+                        <h5>Username</h5>
+                        <div class="form-floating mb-3">
+                            <input id="username" type="text" class="form-control" placeholder="Username" value="{{ contents.username }}" name="username" disabled>
+                            <label for="username" class="form-label">Username</label>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col">
+{#                                <h4>F</h4>#}
+                                <div class="form-floating">
+                                    <input id="f_name" type="text" class="form-control" placeholder="Frist Name" value="{{ contents.f_name }}" name="f_name">
+                                    <label for="f_name" class="form-label">First Name</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-floating">
+                                    <input id="l_name" type="text" class="form-control" placeholder="Last Name" value="{{ contents.l_name }}" name="l_name">
+                                    <label for="l_name" class="form-label">Last Name</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="tel" class="form-control" id="tel" placeholder="Telephone Number" value="{{ contents.tel }}" name="tel">
+                            <label for="tel">Telephone Number</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="email" placeholder="Email Address" value="{{ contents.email }}" disabled>
+                            <label for="email">Email Address</label>
+                        </div>
+
+                        <h5>Gender</h5>
+                        <div class="row border p-3 m-1 mt-0 rounded-2">
+                            <div class="col">
+                                <div class="form-check">
+                                    <input id="man" type="radio" class="form-check-input" value="1" {% if contents.gender == '1' %} checked {% endif %} name="gender">
+                                    <label for="man" >Man</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input id="woman" type="radio" class="form-check-input" value="0" {% if contents.gender == '0' %} checked {% endif %} name="gender">
+                                    <label for="woman" >Woman</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input id="unknown" type="radio" class="form-check-input" value="2" {% if contents.gender == '2' %} checked {% endif %} name="gender">
+                                    <label for="unknown" >Unknown</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-floating mt-3">
+                            <input id="hobby" type="text" class="form-control" placeholder="Hobby" value="{{ contents.hobby }}" name="hobby">
+                            <label for="hobby">Hobby</label>
+                        </div>
+
+                        <div class="form-floating mt-3">
+                            <input id="f_add" type="text" class="form-control" placeholder="Family Address" value="{{ contents.f_add }}" name="f_add">
+                            <label for="f_add">Family Address</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-danger" data-bs-dismiss="modal">cancel</button>
+                        <button id="change_inf" class="btn btn-success">submit</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+        </div>
+    </div>
+{% endblock %}
+</div>
+</div>
+{#</div>#}
+    {{ contents|json_script:'contents' }}
+<script src="{% static 'js/User/user.js' %}"></script>
+{% endblock %}
