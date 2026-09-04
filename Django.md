@@ -17,11 +17,8 @@ django-admin startproject 项目名
 
 
 ```cmd
-#
+#创建home应用
 python manage.py startapp home
-
-#
-python manage.py startapp account
 
 #将创建的home，account目录添加到DjangoProject/DjangoProject/settings.py文件
 #INSTALLED_APPS = [
@@ -31,11 +28,10 @@ python manage.py startapp account
 #    'django.contrib.sessions',
 #    'django.contrib.messages',
 #    'django.contrib.staticfiles',
-#    'account',
 #    'home'
 #]
 
-#
+#启动服务
 python manage.py runserver
 python manage.py runserver 0.0.0.0:5000
 
@@ -56,15 +52,6 @@ DjangoProject/                          # 项目根目录
 │   └── wsgi.py                     # WSGI 入口
 ├── templates/  
 │ 
-├── account/                          # 应用目录
-│   ├── __init__.py                 # 空文件
-│   ├── admin.py                    # 后台管理
-│   ├── apps.py                     # 应用配置
-│   ├── models.py                   # 数据模型
-│   ├── views.py                    # 视图
-│   ├── tests.py                    # 测试
-│   └── migrations/                 # 迁移文件夹
-│       └── __init__.py             # 空文件
 │ 
 ├── home/                          # 应用目录
 │   ├── __init__.py                 # 空文件
@@ -178,6 +165,32 @@ html模板中用`{{  }}`接收数据
 
 
 
+##### JsonResponse 返回json数据
+
+views.py
+
+```python
+from django.http import JsonResponse
+
+def return_date(requset):
+    return JsonResponse({json数据格式内容})
+```
+
+
+
+#### redirect 网页重定向
+
+```python
+from django.shortcuts import render, redirect
+
+def rediect_html(request):
+    return redirect('url中的name值（重定向的html）')  #不能返回数据
+```
+
+
+
+
+
 ### django模板
 
 #### for循环
@@ -235,6 +248,7 @@ home/templates/html/base.html
     <title>Document</title>
 </head>
 <body>
+<!-- start 可自定义 -->
 {% block start %}
 
 {% endblock %}
@@ -254,6 +268,21 @@ home/templates/html/base.html
     <p>1esfs</p>
 {% endblock %}
 ```
+
+
+
+#### 继承
+
+不继承内容会直接覆盖
+
+```html
+{% block start %}
+{# 保留父级内容，追加新内容 #}
+	{% block.super %}
+{% endblock %}
+```
+
+
 
 
 
@@ -299,7 +328,7 @@ python manage.py migrate
 
 
 
-#### 查看数据表
+### 查看数据表/数据库
 
 默认数据库sqlite
 
@@ -377,7 +406,9 @@ DATABASES = {
 > 
 >django 5.x 要求MySQL8.4+
 
-#### 向数据表中添加数据
+
+
+#### 数据表CRUD
 
 ```cmd
 #进入django shell
@@ -415,6 +446,76 @@ class Student(models.Model):
 ```
 
 python manage.py shell 中使用 Student.objects.all()能直接打印`name`属性
+
+
+
+##### Create创建
+
+models.py
+
+```python
+from django.db import models
+
+class Student(models.Model):
+    name = models.CharField(max_length=25)
+    age = models.IntegerField()
+```
+
+
+
+views.py
+
+```python
+#导入model
+from home.models import Student
+
+#class.objects.create 创建完自动保存
+def text(request):
+    user = request.user
+    Student.objects.create(
+        user=user,
+        name= 'zhangs',
+        age= 18
+    )
+```
+
+
+
+##### Update更新
+
+views.py
+
+```python
+#导入model
+from home.models import Student
+
+#class.objects.update_or_create 更新或创建
+#update 对象
+#created 返回是否是创建
+def text(request):
+    user = request.user
+    update,created = Student.objects.updata_or_create(
+        user=user,
+        name= 'zhangs',
+        age= 18
+    )
+```
+
+
+
+##### Delete删
+
+
+
+
+
+##### Read查
+
+
+
+
+
+
 
 #### django ORM查询
 
@@ -933,7 +1034,7 @@ admin.site.register(Account)
 
 Django ORM 中用于对查询集进行聚合计算的方法，比如计算总数、平均值、最大值、最小值等。
 
-#### aggregate() 是 Django 查询集（QuerySet）的一个方法，用于返回一个包含聚合值的字典。它不会返回模型对象，而是返回计算结果。
+aggregate() 是 Django 查询集（QuerySet）的一个方法，用于返回一个包含聚合值的字典。它不会返回模型对象，而是返回计算结果。
 
 | 函数  |	作用|示例|
 |-----|    ----| ----|
@@ -957,3 +1058,613 @@ user_count = User.objects.all().aggregate(Count('id'))
 
 
 #### annotate
+
+
+
+
+
+### 上传文件
+
+- **开发环境**：让 Django 直接提供用户上传的文件（图片、视频等）
+- **生产环境**：通常由 Nginx、Apache 等 Web 服务器提供，Django 不处理
+
+setting.py
+
+```python
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+# 媒体文件配置
+MEDIA_URL = '/media/'  # 访问URL
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+```
+
+urls.py
+
+```python
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = []  #url路径
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+```
+
+
+
+#### 图片重命名
+
+生成唯一id
+
+class 
+
+```python
+import os
+import uuid
+from django.utils.deconstruct import deconstructible
+
+@deconstructible
+class PictureRename:
+    def __init__(self, sub_path):
+        self.path = sub_path
+
+    def __call__(self, instance, filename):
+        ext = filename.split('.')[-1]
+        new_filename = f'{uuid.uuid4().hex}.{ext}'
+
+        return os.path.join(self.path, new_filename)
+```
+
+models.py
+
+```python
+#导入上面文件
+
+user_picture = models.ImageField(upload_to=PictureRename('user_picture/'), blank=True, null=True, default='default/user_default.png')
+```
+
+
+
+### 装饰器
+
+#### @login_required
+
+只有登录过后的才能访问
+
+
+
+#### @csrf_exempt
+
+跳过csrf验证
+
+
+
+#### @cache_page(60)
+
+缓存
+
+
+
+#### @deconstructible
+
+支持数据迁移，用于makemigrations，migrate
+
+
+
+#### @admin.register
+
+注册admin
+
+
+
+
+
+
+
+## 问题集
+
+### 手动删除数据表
+
+删除数据表之后，出现`python manage.py migrate`报错
+
+```
+# 1. 查看迁移状态
+python manage.py showmigrations
+
+# 2. 伪造回滚到零（不执行 SQL，只更新记录）
+python manage.py migrate flowers zero --fake
+
+# 3. 删除迁移文件（保留 __init__.py）
+rm flowers/migrations/0*.py  # Linux/macOS
+del flowers\migrations\0*.py # Windows
+
+# 4. 重新生成迁移
+python manage.py makemigrations flowers
+
+# 5. 执行迁移
+python manage.py migrate flowers
+```
+
+
+
+
+
+# django-vue
+
+常用3个包
+
+```cmd
+#Django REST Framework
+pip install djangorestframework
+#跨域支持
+pip install django-cors-headers
+#jwt认证
+pip install djangorestframework-simplejwt
+```
+
+
+
+setting.py
+
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    # 第三方应用
+    'rest_framework',  # DRF
+    'rest_framework_simplejwt',  # JWT
+    'corsheaders',  # CORS
+]
+
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  #必须最前面
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+# CORS 配置
+CORS_ALLOW_ALL_ORIGINS = True  # 开发环境（允许所有域名）
+# CORS_ALLOWED_ORIGINS = [      # 生产环境（指定域名）
+#     "http://localhost:5173",
+#     "http://127.0.0.1:5173",
+# ]
+
+# REST Framework 配置
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
+# JWT 配置（可选）
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
+```
+
+
+
+urls.py
+
+```python
+from django.contrib import admin
+from django.urls import path, include
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    
+    # JWT Token 获取和刷新
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # API 路由
+    path('api/', include('flowers.urls')),
+]
+```
+
+
+
+获取token密钥
+
+```bash
+POST /api/token/
+{
+    "username": "admin",
+    "password": "123456"
+}
+```
+
+
+
+刷新token
+
+```
+POST /api/token/refresh/
+{
+    "refresh": "eyJhbGciOiJIUzI1NiIs..."
+}
+```
+
+
+
+
+
+## django
+
+setting.py
+
+在项目根目录下创建static用于存放静态文件和media 存放目录，图片资源
+
+```python
+import os
+from pathlib import Path
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-&zgr^2vf4y^hgz_qikgdmb!02*zws!&bijsjt4j8l35kat%r1i'
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
+ALLOWED_HOSTS = []
+
+
+# Application definition
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    # 第三方应用
+    'rest_framework',  # DRF
+    'rest_framework_simplejwt',  # JWT
+    'corsheaders',  # CORS
+
+    'account',
+    'flowers',
+    'home',
+
+    'app_test',
+]
+
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+# REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=3),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1)
+}
+
+ROOT_URLCONF = 'DjangoApp.urls'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates']
+        ,
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = 'DjangoApp.wsgi.application'
+
+
+# Database
+# https://docs.djangoproject.com/en/6.1/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+
+# Password validation
+# https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
+
+
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+
+# Internationalization
+# https://docs.djangoproject.com/en/6.1/topics/i18n/
+
+LANGUAGE_CODE = 'en-us'
+
+# TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
+
+USE_I18N = True
+
+USE_TZ = True
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/6.1/howto/static-files/
+
+STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+# 媒体文件配置
+MEDIA_URL = '/media/'  # 访问URL
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Email
+# https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
+
+MAILERS = {
+    'default': {
+        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+    },
+}
+
+```
+
+
+
+urls.py
+
+```python
+from django.contrib import admin
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+#页面返回路径
+#''中写路径， 
+#def_or_class 写vies.py 中的def 或 class， class 需要解析（class.as_view()）
+urlpatterns = [
+    path('', def_or_class, name= '')
+]
+
+
+#django返回可显示的图片等，
+#生产环境一般由apache，nginx上线图片解析功能
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+```
+
+
+
+### startapp
+
+account
+
+
+
+#### serializers.py
+
+序列化
+
+```python
+from rest_framework import serializers
+
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'password', 'email']
+        
+        #可选
+        read_only_fields = []
+
+    #我一般在前端验证数据，这里就没写数据验证
+    
+    def create(self, validated_data):
+        
+        if User.objects.fitlter(email= email).exists():
+            return serializers.ValidstionError({
+                'msg': '用户存在'
+            })
+            
+        user = User.objects.create_user(
+			# 根据自己需求写
+        	username = validated_data['email']
+            email = validated_data['email']
+            password = validate_data['password']
+        )
+        
+        return user
+```
+
+
+
+#### model.py
+
+```python
+from django.db import models
+from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
+
+from utils.models.Rename import PictureRname
+
+class Profiles(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profiles')
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    gender = models.IntegerField(default=2)
+    tel = models.IntegerField(blank=True, default=0)
+    user_pic = models.ImageField(upload_to=PictureRname('user_picture/'), default='default/user_default.png')
+    family_address = models.TextField(default='正在占据地球村...')
+    hobby = models.TextField(default='寻找新明...')
+
+    class Meta:
+        db_table = 'account_profiles'
+        ordering = ['-id']
+        verbose_name = '用户'
+
+```
+
+数据迁移
+
+```cmd
+python manage.py makemigrations
+python manage.py migrate
+```
+
+
+
+#### admin.py
+
+注册模型
+
+```python
+from django.contrib import admin
+
+from account.models import Profiles
+
+admin.site.register(Profiles)
+```
+
+
+
+
+
+#### 创建超级用户
+
+页面访问：http://127.0.0.1:8000/admin
+
+```cmd
+python manage.py createsuperuser
+```
+
+
+
+
+
+
+
+#### views.py
+
+```python
+from django.shortcuts import render
+from django.contrib.auth.models import User
+from django.contrib.auth import login
+
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from utils.serializers import RegisterSerializer
+
+class RegisteView(generics.CreateAPIView):
+    queryser = User.objects.all()
+    
+    #允许任何人访问
+    permissions_classes = [permissions.AllowAny]
+    serializer_class = RegisterSerializer
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({
+                'msg': 'user is success created'
+            }, status = status.HTTP_200_OK)
+            
+        return Response({
+            'msg': f'create is failed',
+            'err': serializers.errors
+        }, status = status.HTTP_400_BAD_REQUEST)
+```
+
+
+
+#### accout/urls.py
+
+```python
+from django.urls import path
+
+from .models import *
+
+urlpatterns = [
+    path('register', RegisterView.as_view())
+]
+```
+
+
+
