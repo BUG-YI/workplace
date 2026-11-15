@@ -1,0 +1,7 @@
+D:\WorkPlace\Rider\publish\HZMAPP.pdb
+D:\WorkPlace\Rider\publish\D3DCompiler_47_cor3.dll
+D:\WorkPlace\Rider\publish\PenImc_cor3.dll
+D:\WorkPlace\Rider\publish\PresentationNative_cor3.dll
+D:\WorkPlace\Rider\publish\vcruntime140_cor3.dll
+D:\WorkPlace\Rider\publish\wpfgfx_cor3.dll
+D:\WorkPlace\Rider\publish\HZMAPP.exe

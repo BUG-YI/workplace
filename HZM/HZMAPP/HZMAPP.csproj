@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UseWPF>true</UseWPF>
+    </PropertyGroup>
+    
+    <!--将该路径下的图片打包进程序-->
+    <ItemGroup>
+        <!-- 将 Assets 文件夹及其所有子文件夹下的所有图片，作为资源打包 -->
+        <Resource Include="Assets\**\*.png" />
+        <Resource Include="Assets\**\*.jpg" />
+        <Resource Include="Assets\**\*.gif" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="View\LR\Login.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
+
+</Project>

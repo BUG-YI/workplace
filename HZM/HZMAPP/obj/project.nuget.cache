@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "VHvG3P3qGEE=",
+  "success": true,
+  "projectFilePath": "D:\\WorkPlace\\Rider\\HZM\\HZMAPP\\HZMAPP.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\25172\\.nuget\\packages\\communitytoolkit.mvvm\\8.4.2\\communitytoolkit.mvvm.8.4.2.nupkg.sha512"
+  ],
+  "logs": []
+}

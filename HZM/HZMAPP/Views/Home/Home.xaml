@@ -1,0 +1,101 @@
+﻿<Page x:Class="HZMAPP.Views.Home.Home"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:HZMAPP.Views.Home"
+      xmlns:vm="clr-namespace:HZMAPP.ViewModels"
+      xmlns:controls="clr-namespace:HZMAPP.User_Controls"
+      mc:Ignorable="d"
+      x:Name="HomeP"
+      Title="Home" MinHeight="450" MinWidth="450">
+    
+    <Page.DataContext>
+        <vm:HomePageVM></vm:HomePageVM>
+    </Page.DataContext>
+    
+    <Page.Resources>
+        
+    </Page.Resources>
+    
+    <ScrollViewer>
+        <Grid ShowGridLines="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="200"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Border
+                Padding="10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+    
+                    <Border
+                        CornerRadius="8"
+                        BorderThickness="1"
+                        MaxWidth="300"
+                        Padding="8">
+                        <Border.Background>
+                            <LinearGradientBrush
+                                StartPoint="0,0"
+                                EndPoint="1,1">
+                                <GradientStop Color="#6c78d7" Offset="0.0"></GradientStop>
+                                <GradientStop Color="#7c72d3" Offset=".2"></GradientStop>
+                                <GradientStop Color="#9d66cb" Offset=".4"></GradientStop>
+                                <GradientStop Color="#be5ac3" Offset=".6"></GradientStop>
+                                <GradientStop Color="#de4ebb" Offset=".8"></GradientStop>
+                                <GradientStop Color="#ef48b7" Offset="1.0"></GradientStop>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Effect>
+                            <DropShadowEffect
+                                Color="Black"
+                                BlurRadius="20"
+                                ShadowDepth="5"
+                                Direction="270"
+                                Opacity="0.3"></DropShadowEffect>
+                        </Border.Effect>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                                FontSize="27"
+                                Foreground="White"
+                                FontWeight="Bold"
+                                Text="签到"/>
+    
+                            <ScrollViewer
+                                VerticalScrollBarVisibility="Hidden"
+                                Grid.Row="1">
+                                <TextBlock
+                                    Padding="2,8"
+                                    TextWrapping="Wrap"
+                                    FontSize="15"
+                                    Text="今日还未签到哦~~"></TextBlock>
+                            </ScrollViewer>
+    
+                            <Button
+                                Grid.Row="2"
+                                Width="60"
+                                Height="30"
+                                Content="签到"
+                                Foreground="White"
+                                FontWeight="UltraBold"
+                                Tag="0"
+                                HorizontalAlignment="Right"
+                                Click="SignIn"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+            <controls:ItemsControl
+                Grid.Row="1"></controls:ItemsControl>
+        </Grid>
+    </ScrollViewer>
+</Page>

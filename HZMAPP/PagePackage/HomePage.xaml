@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="HZMAPP.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:HZMAPP"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:HZMAPP.Models"
+    mc:Ignorable="d">
+    
+    <Page.Resources>
+        <Style x:Key="GridStyle" TargetType="Border">
+            <Setter Property="Background" Value="#404D63"></Setter>
+            <Setter Property="Margin" Value="20"></Setter>
+            <Setter Property="Padding" Value="20, 10, 20, 20"></Setter>
+            <Setter Property="CornerRadius" Value="8"></Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid ColumnSpacing="30">
+        
+        <Grid.Resources>
+            <Style x:Key="Style1" TargetType="Border">
+                
+            </Style>
+        </Grid.Resources>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="0.8*"></RowDefinition>
+            <RowDefinition Height="1.5*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <Grid >
+            <TextBlock Text="23"></TextBlock>
+        </Grid>
+        <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource GridStyle}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                
+                <Grid
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"
+                            Margin="0,0,0,20"
+                            ColumnSpacing="4">
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="今日打卡" FontSize="20" VerticalAlignment="Center"/>
+                    <FontIcon Glyph="&#xF0E3;" Grid.Column="1" FontSize="20" VerticalAlignment="Center" Margin="2,4,2,0"/>
+                    <TextBlock Grid.Column="2" HorizontalAlignment="Right"  Text="1233"></TextBlock>
+                </Grid>
+                <StackPanel Grid.Row="1"><TextBlock Text="随机生成语"></TextBlock></StackPanel>
+                <Button Grid.Row="2" Click="ClickIn" Background="#404D63" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal">
+                        <PathIcon Visibility="Collapsed" Data="M18.71 7.21a1 1 0 0 0-1.42 0l-7.45 7.46l-3.13-3.14A1 1 0 1 0 5.29 13l3.84 3.84a1 1 0 0 0 1.42 0l8.16-8.16a1 1 0 0 0 0-1.47"></PathIcon>
+                        <TextBlock x:Name="SignI" Text="{x:Bind Model.SingInButtonText}"></TextBlock>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource GridStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock VerticalAlignment="Top" 
+                               FontSize="20"
+                               Text="累计打卡"/>
+                    <Viewbox Grid.Row="1" >
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock
+                                Text="128998" 
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                            <TextBlock Text=" Days" 
+                                       FontSize="2"
+                                       Margin="0,3"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Top"/>
+                        </StackPanel>
+                    </Viewbox>
+                </Grid>
+        </Border>
+        <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource GridStyle}">
+            <StackPanel>
+                <TextBlock Text="打卡记录" FontSize="20" Margin="0,0,0,10"/>
+                <Viewbox>
+                    <ListView ItemsSource="{x:Bind PunchRecords }"
+                              Width="250"
+                              Height="130">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Text="{x:Bind}" FontSize="13"/>
+                                    <TextBlock Grid.Column="1" Text="time" FontSize="13" HorizontalAlignment="Right"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Viewbox>
+            </StackPanel>
+        </Border>
+        
+    </Grid>
+</Page>

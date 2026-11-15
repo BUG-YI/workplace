@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "HZMAPP (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "HZMAPP (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

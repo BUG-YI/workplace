@@ -1,0 +1,173 @@
+﻿<Page x:Class="HZMAPP.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mv="clr-namespace:HZMAPP.ViewModels"
+      xmlns:local="clr-namespace:HZMAPP"
+      mc:Ignorable="d"
+      Title="MainPage" MinHeight="450" MinWidth="650">
+    
+    <Page.DataContext>
+        <mv:MainPageVM></mv:MainPageVM>
+    </Page.DataContext>
+    
+    <Page.Resources>
+    </Page.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <StackPanel x:Name="NavbarBlock"
+                    Background="#343434"
+                    Width="200">
+            <StackPanel.Resources>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                    <Setter Property="Foreground" Value="White"></Setter>
+                    <Setter Property="Margin" Value="0,6"></Setter>
+                    
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListViewItem">
+                                <Border x:Name="ItemBorder" Background="Transparent" 
+                                        CornerRadius="6"
+                                        Padding="10,6,0,0"
+                                        Margin="5,0">
+                                    <ContentPresenter HorizontalAlignment="Left"
+                                                      VerticalAlignment="Center"></ContentPresenter>
+                                </Border>
+                                
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="ItemBorder" Property="Background" Value="#E3E3E3"></Setter>
+                                        <Setter Property="Foreground" Value="Black"></Setter>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="ItemBorder" Property="Background" Value="#ADADAD"></Setter>
+                                        <Setter Property="Foreground" Value="Black"></Setter>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </StackPanel.Resources>
+            <StackPanel Orientation="Horizontal">
+                <Image Width="50"
+                       Margin="30,20,6,20"
+                       Source="Assets/Image/hzm_white.png"/>
+                <TextBlock Text="HZM"
+                           Foreground="White"
+                           FontSize="33"
+                           Margin="1,24,0,0"/>
+            </StackPanel>
+            
+            <ListView ItemsSource="{Binding NavbarTitle}" 
+                      Background="Transparent"
+                      BorderBrush="Transparent"
+                      SelectionChanged="Selector_OnSelectionChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                            <TextBlock Text="{Binding Title}"
+                                       Padding="0,3"
+                                       FontWeight="Bold"
+                                       FontSize="15"
+                                       Height="30"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            
+        </StackPanel>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Border BorderBrush="BlanchedAlmond"
+                    BorderThickness="0,0,0,2">
+                <Grid VerticalAlignment="Center"
+                      Margin="10,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Grid VerticalAlignment="Center"
+                          HorizontalAlignment="Left">
+                        <TextBlock
+                            x:Name="PageT"
+                            Text="{Binding NavbarTitle[0].Title}"
+                            FontSize="25"></TextBlock>
+                    </Grid>
+                    
+                    <Border Grid.Column="1" Height="56">
+                        <Grid>
+                            <TextBox Text="123"
+                                     HorizontalAlignment="Stretch"
+                                     VerticalAlignment="Center"
+                                     Height="40"
+                                     FontSize="15"
+                                     Margin="8"
+                                     Padding="24,0,8,0">
+                                <TextBox.Template>
+                                    <ControlTemplate TargetType="TextBox">
+                                        <Border Background="BlanchedAlmond"
+                                                BorderBrush="Aquamarine"
+                                                BorderThickness="2"
+                                                CornerRadius="18">
+                                            <ScrollViewer x:Name="PART_ContentHost"
+                                                          Margin="{TemplateBinding Margin}"
+                                                          VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                                          ></ScrollViewer>
+                                        </Border>
+                                    </ControlTemplate>
+                                </TextBox.Template>
+                            </TextBox>
+                            <Viewbox Width="20" Height="20" 
+                                     HorizontalAlignment="Left"
+                                     Margin="18,0,0,0">
+                                <Canvas Width="48" Height="48">
+                                    <!-- 放大镜的圆环和手柄 -->
+                                    <Path Data="M21 38c9.389 0 17-7.611 17-17S30.389 4 21 4S4 11.611 4 21s7.611 17 17 17Z M36.222 36.222l8.485 8.485" 
+                                          Stroke="Gray" StrokeThickness="4" StrokeLineJoin="Round" Fill="Transparent"/>
+                                    <!-- 内部的弧线 -->
+                                    <Path Data="M26.657 14.343A7.975 7.975 0 0 0 21 12a7.975 7.975 0 0 0-5.657 2.343" 
+                                          Stroke="Gray" StrokeThickness="4" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Fill="Transparent"/>
+                                </Canvas>
+                            </Viewbox>
+                        </Grid>
+                    </Border>
+                    <!--<Grid Grid.Column="3"
+                          ShowGridLines="True"
+                          VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="1" Text="132" 
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   VerticalAlignment="Bottom"></TextBlock>
+                        <Border Grid.Column="2" BorderBrush="BlanchedAlmond"
+                                BorderThickness="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Height="50"
+                                Width="50"
+                                CornerRadius="50">
+                            <Image Source="Assets/Image/user.png"></Image>
+                        </Border>
+                    </Grid>-->
+                </Grid>
+            </Border>
+            <Frame Grid.Row="1" x:Name="ContentPage" NavigationUIVisibility="Hidden"></Frame>
+        </Grid>
+    </Grid>
+</Page>
